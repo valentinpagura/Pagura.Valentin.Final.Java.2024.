@@ -1,6 +1,6 @@
 # Pagura.Valentin.Final.Java.2024.
 ##Gestora de productos
-
+----------------------
 Aplicación Java para gestionar un inventario de productos (alimenticios, electrónicos y ropa). Permite agregar, eliminar, actualizar y filtrar productos, aumentar precios en un 10% mediante Consumers, y exportar listas (filtradas o no) a archivos JSON, CSV y TXT. Ideal para el control y organización de inventarios de manera eficiente.
 
 ##Paquetes.
@@ -11,11 +11,15 @@ Dentro del paquete de logica se llevara a cabo la creacion de metodos importante
 GUI:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Interfaz%20de%20usuario.jpg?raw=true)
 
+-------------------------------------------------------------------------------------------------------------------------------
 Archivo generado .TXT:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/TXT.jpg?raw=true)
+
+-------------------------------------------------------------------------------------------------------------
 Archivo generado Json:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Json.jpg?raw=true)
 
+------------------------------------------------------------------------------------------------------------
 Archivo generado CSV:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/CSV.jpg?raw=true)
 
