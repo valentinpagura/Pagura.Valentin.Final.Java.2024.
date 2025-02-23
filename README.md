@@ -13,14 +13,13 @@ GUI:
 
 Archivo generado .TXT:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/TXT.jpg?raw=true)
-
 Archivo generado Json:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Json.jpg?raw=true)
 
 Archivo generado CSV:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/CSV.jpg?raw=true)
 
-
+----------------------
 >[!IMPORTANT]
 Todos los espacios deben ser rellenados al intentar agregar un producto a la gestora!
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Datos%20requeridos.jpg?raw=true)
