@@ -23,3 +23,11 @@ Archivo generado CSV:
 >[!IMPORTANT]
 Todos los espacios deben ser rellenados al intentar agregar un producto a la gestora!
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Datos%20requeridos.jpg?raw=true)
+
+-------------
+
+##Filtrado y boton "Mostrar Todo"
+--------------------------------
+En la aplicacion podremos filtrar por las tres categorias de tipo producto (alimento,ropa y electronico) al tocar el boton de filtrar se despegara un comboBox que le permitira al usuario filtrar y ver los productos con una categoria especifica.
+-----------------------------------------------------------------
+![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Filtrado.jpg?raw=true)
