@@ -38,3 +38,19 @@ En la aplicacion podremos filtrar por las tres categorias de tipo producto (alim
 
 >[!NOTE]
 Al tocar el boton "Mostrar Todo" la lista volvera a desplegar todos los productos sin importar el filtrado anterior.
+
+##Metodos SQL-DATE Y chequeo de vencimientos para productos alimenticios.
+-------------------------------------------------------------------------
+Al agregar un producto alimenticio en la app, aparecerán dos botones en el display: uno para ingresar la fecha de vencimiento, ya sea manualmente o usando SQL-Date para mayor comodidad, y otro para verificar si el producto está vencido, al hacer clic sobre la información y luego presionar el botón.
+-----------------------------------------------------------------------------------------------------------------
+#Producto no vencido:
+![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/NO%20VENCIDO.jpg?raw=true)
+
+--------------------------------------------------------------------------------------------------------------------
+
+#Producto vencido:
+![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Vencimiento.jpg?raw=true)
+
+>[!IMPORTANT]
+-------------
+Al agregar un producto alimenticio a la lista, deberá marcarse la casilla que indique si es perecedero o no.
