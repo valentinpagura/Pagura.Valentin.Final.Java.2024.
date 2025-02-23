@@ -19,6 +19,6 @@ Archivo generado Json:
 Archivo generado CSV:
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/CSV.jpg?raw=true)
 
-.[!IMPORTANT].
+_[!IMPORTANT]_
 Todos los espacios deben ser rellenados al intentar agregar un producto a la gestora!
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Datos%20requeridos.jpg?raw=true)
