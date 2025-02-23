@@ -52,5 +52,4 @@ Al agregar un producto alimenticio en la app, aparecerán dos botones en el disp
 ![image alt](https://github.com/valentinpagura/Pagura.Valentin.Final.Java.2024./blob/main/Vencimiento.jpg?raw=true)
 
 >[!IMPORTANT]
--------------
-Al agregar un producto alimenticio a la lista, deberá marcarse la casilla que indique si es perecedero o no.
+>Al agregar un producto alimenticio a la lista, deberá marcarse la casilla que indique si es perecedero o no.
