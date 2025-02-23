@@ -1,24 +1,24 @@
 package gestiondeproductos.logica;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
 public class Alimento extends Producto {
-    private String fechaVencimiento;
-    private boolean esPerecedero;
+    private Date fechaVencimiento; // Fecha de vencimiento del alimento
+    private boolean esPerecedero;  // Indica si el alimento es perecedero
 
     // Constructor de Alimento
-    public Alimento(int id, String nombre, double precio, String categoria, int stock) {
-        super(id, nombre, precio, categoria, stock);
+    public Alimento(int id, String nombre, double precio, String categoria, int stock, Date fechaVencimiento, boolean esPerecedero) {
+        super(id, nombre, precio, categoria, stock); // Llama al constructor de la clase padre (Producto)
         this.fechaVencimiento = fechaVencimiento;
         this.esPerecedero = esPerecedero;
     }
 
-    // Métodos getter y setter
-    public String getFechaVencimiento() {
+    // Getters y setters específicos de Alimento
+    public Date getFechaVencimiento() {
         return fechaVencimiento;
     }
 
-    public void setFechaVencimiento(String fechaVencimiento) {
+    public void setFechaVencimiento(Date fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
 
@@ -30,16 +30,23 @@ public class Alimento extends Producto {
         this.esPerecedero = esPerecedero;
     }
 
-    @Override
-    public void mostrarDetalles() {
-        System.out.println("Producto: " + getNombre());
-        System.out.println("ID: " + getId());
-        System.out.println("Precio: $" + getPrecio());
-        System.out.println("Categoría: " + getCategoria());
-        System.out.println("Stock disponible: " + getStock());
-        System.out.println("Fecha de vencimiento: " + fechaVencimiento);
-        System.out.println("Es perecedero: " + (esPerecedero ? "Sí" : "No"));
+    // Método para verificar si el alimento está vencido
+    public boolean estaVencido() {
+        Date fechaActual = new Date(System.currentTimeMillis()); // Fecha actual
+        return fechaVencimiento.before(fechaActual); // Verifica si la fecha de vencimiento es anterior a la actual
     }
 
-    // No es necesario implementar compareTo en Alimento porque ya se implementa en Producto.
+    // Sobrescribir el método abstracto mostrarDetalles
+    @Override
+    public void mostrarDetalles() {
+        System.out.println("Detalles del Alimento:");
+        System.out.println("ID: " + getId());
+        System.out.println("Nombre: " + getNombre());
+        System.out.println("Precio: " + getPrecio());
+        System.out.println("Categoría: " + getCategoria());
+        System.out.println("Stock: " + getStock());
+        System.out.println("Fecha de Vencimiento: " + fechaVencimiento);
+        System.out.println("Es Perecedero: " + (esPerecedero ? "Sí" : "No"));
+        System.out.println("¿Está vencido?: " + (estaVencido() ? "Sí" : "No"));
+    }
 }

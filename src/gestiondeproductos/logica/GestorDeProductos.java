@@ -9,8 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,7 +26,7 @@ public class GestorDeProductos implements Crud<Producto> {
     }
 
     @Override
-    public void crear(Producto producto) {
+    public void crear(Producto producto) { // Recibe un tipo PRODUCTO y nombra producto (create)
         if (existeProducto(producto.getId())) {
             throw new RuntimeException("Producto duplicado"); // Evita productos duplicados.
         }
@@ -35,12 +34,12 @@ public class GestorDeProductos implements Crud<Producto> {
     }
 
     @Override
-    public List<Producto> leer() {
+    public List<Producto> leer() { // (read)
         return productos; // Devuelve la lista completa de productos.
     }
 
     @Override
-    public Producto leer(int id) {
+    public Producto leer(int id) { // (read)
         return productos.stream()
                        .filter(p -> p.getId() == id) // Busca por ID.
                        .findFirst()
@@ -104,29 +103,11 @@ public class GestorDeProductos implements Crud<Producto> {
                        .collect(Collectors.toList());
     }
 
-    public List<Alimento> filtrarPorFechaVencimiento(String fecha) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate fechaLimite;
-
-        try {
-            fechaLimite = LocalDate.parse(fecha, formatter);
-        } catch (Exception e) {
-            System.err.println("Fecha no válida: " + fecha);
-            return Collections.emptyList(); // Retorna una lista vacía si la fecha no es válida.
-        }
-
+    public List<Alimento> filtrarPorFechaVencimiento(Date fechaLimite) {
         return productos.stream()
                        .filter(p -> p instanceof Alimento) // Solo filtra Alimentos.
                        .map(p -> (Alimento) p) // Convierte a Alimento.
-                       .filter(a -> {
-                           try {
-                               LocalDate fechaVencimiento = LocalDate.parse(a.getFechaVencimiento(), formatter);
-                               return fechaVencimiento.isBefore(fechaLimite);
-                           } catch (Exception e) {
-                               System.err.println("Fecha de vencimiento no válida: " + a.getFechaVencimiento());
-                               return false; // Ignora alimentos con fechas no válidas.
-                           }
-                       })
+                       .filter(a -> a.getFechaVencimiento().before(fechaLimite)) // Filtra por fecha de vencimiento.
                        .collect(Collectors.toList());
     }
 
@@ -146,7 +127,11 @@ public class GestorDeProductos implements Crud<Producto> {
             return;
         }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(Date.class, new DateSerializer()) // Serializador personalizado para java.sql.Date
+            .create();
+
         File file = new File(archivo);
         if (file.exists()) {
             file.delete(); // Elimina el archivo existente antes de escribir uno nuevo.
@@ -163,15 +148,28 @@ public class GestorDeProductos implements Crud<Producto> {
     // Método para exportar a CSV (acepta una lista de productos).
     public void exportarCSV(List<Producto> productos, String archivo) {
         try (FileWriter writer = new FileWriter(archivo)) {
-            writer.write("ID,Nombre,Precio,Stock,Categoría\n"); // Escribe la cabecera del CSV.
+            writer.write("ID,Nombre,Precio,Stock,Categoría,FechaVencimiento,EsPerecedero\n"); // Escribe la cabecera del CSV.
             for (Producto producto : productos) {
-                writer.write(
-                    producto.getId() + "," +
-                    producto.getNombre() + "," +
-                    producto.getPrecio() + "," +
-                    producto.getStock() + "," +
-                    producto.getCategoria() + "\n" // Escribe cada producto en una línea.
-                );
+                if (producto instanceof Alimento) {
+                    Alimento alimento = (Alimento) producto;
+                    writer.write(
+                        producto.getId() + "," +
+                        producto.getNombre() + "," +
+                        producto.getPrecio() + "," +
+                        producto.getStock() + "," +
+                        producto.getCategoria() + "," +
+                        alimento.getFechaVencimiento() + "," +
+                        alimento.isEsPerecedero() + "\n"
+                    );
+                } else {
+                    writer.write(
+                        producto.getId() + "," +
+                        producto.getNombre() + "," +
+                        producto.getPrecio() + "," +
+                        producto.getStock() + "," +
+                        producto.getCategoria() + ",,\n"
+                    );
+                }
             }
             System.out.println("Productos exportados a '" + archivo + "' correctamente.");
         } catch (IOException e) {
@@ -183,17 +181,31 @@ public class GestorDeProductos implements Crud<Producto> {
     public void exportarTXT(List<Producto> productos, String archivo) {
         try (FileWriter writer = new FileWriter(archivo)) {
             writer.write("=== Listado de Productos ===\n\n"); // Escribe el encabezado.
-            writer.write(String.format("%-5s %-20s %-10s %-10s %-15s\n", 
-                "ID", "Nombre", "Precio", "Stock", "Categoría")); // Formato de columnas.
+            writer.write(String.format("%-5s %-20s %-10s %-10s %-15s %-15s %-15s\n", 
+                "ID", "Nombre", "Precio", "Stock", "Categoría", "Fecha Venc.", "Perecedero")); // Formato de columnas.
             writer.write("-------------------------------------------------\n");
 
             for (Producto producto : productos) {
-                writer.write(String.format("%-5d %-20s %-10.2f %-10d %-15s\n", 
-                    producto.getId(), 
-                    producto.getNombre(), 
-                    producto.getPrecio(), 
-                    producto.getStock(), 
-                    producto.getCategoria())); // Escribe cada producto.
+                if (producto instanceof Alimento) {
+                    Alimento alimento = (Alimento) producto;
+                    writer.write(String.format("%-5d %-20s %-10.2f %-10d %-15s %-15s %-15s\n", 
+                        producto.getId(), 
+                        producto.getNombre(), 
+                        producto.getPrecio(), 
+                        producto.getStock(), 
+                        producto.getCategoria(),
+                        alimento.getFechaVencimiento(),
+                        alimento.isEsPerecedero()));
+                } else {
+                    writer.write(String.format("%-5d %-20s %-10.2f %-10d %-15s %-15s %-15s\n", 
+                        producto.getId(), 
+                        producto.getNombre(), 
+                        producto.getPrecio(), 
+                        producto.getStock(), 
+                        producto.getCategoria(),
+                        "N/A",
+                        "N/A"));
+                }
             }
 
             System.out.println("Listado exportado a '" + archivo + "' correctamente.");
@@ -204,7 +216,10 @@ public class GestorDeProductos implements Crud<Producto> {
 
     // Método para importar desde JSON.
     public void importarJSON(String archivo) {
-        Gson gson = new Gson(); // Crea un objeto Gson.
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Date.class, new DateDeserializer()) // Deserializador personalizado para java.sql.Date
+            .create();
+
         try (FileReader reader = new FileReader(archivo)) {
             Type tipoListaProductos = new TypeToken<List<Producto>>() {}.getType(); // Define el tipo de lista.
             List<Producto> productosImportados = gson.fromJson(reader, tipoListaProductos); // Convierte JSON a lista.

@@ -13,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.sql.Date;
 
 public class GestionDeProductosApp extends Application {
     private final GestorDeProductos gestor = new GestorDeProductos(); // Gestor de productos.
@@ -41,7 +42,9 @@ public class GestionDeProductosApp extends Application {
             }),
             crearBoton("Exportar a JSON", this::exportarJSON), // Botón para exportar a JSON.
             crearBoton("Exportar a CSV", this::exportarCSV), // Botón para exportar a CSV.
-            crearBoton("Exportar a TXT", this::exportarTXT) // Botón para exportar a TXT.
+            crearBoton("Exportar a TXT", this::exportarTXT), // Botón para exportar a TXT.
+            crearBoton("Incrementar Precio 10%", this::incrementarPrecio10PorCiento), // Botón para incrementar precio.
+            crearBoton("Verificar Vencimiento", this::verificarVencimiento) // Botón para verificar vencimiento.
         );
 
         HBox root = new HBox(10); // Contenedor principal.
@@ -53,6 +56,34 @@ public class GestionDeProductosApp extends Application {
         primaryStage.show(); // Muestra la ventana.
     }
 
+    // Método para incrementar el precio en un 10%
+    private void incrementarPrecio10PorCiento() {
+        Producto seleccionado = tabla.getSelectionModel().getSelectedItem(); // Obtiene el producto seleccionado.
+        if (seleccionado != null) {
+            gestor.incrementarPrecio10PorCiento.accept(seleccionado); // Aplica el Consumer.
+            tabla.refresh(); // Refresca la tabla para mostrar el nuevo precio.
+            mostrarAlerta("Éxito", "Precio incrementado en un 10% para: " + seleccionado.getNombre());
+        } else {
+            mostrarAlerta("Error", "Seleccione un producto para incrementar su precio.");
+        }
+    }
+
+    // Método para verificar si un alimento está vencido
+    private void verificarVencimiento() {
+        Producto seleccionado = tabla.getSelectionModel().getSelectedItem(); // Obtiene el producto seleccionado.
+        if (seleccionado instanceof Alimento) {
+            Alimento alimento = (Alimento) seleccionado;
+            if (alimento.estaVencido()) {
+                mostrarAlerta("Vencimiento", "El alimento " + alimento.getNombre() + " está vencido.");
+            } else {
+                mostrarAlerta("Vencimiento", "El alimento " + alimento.getNombre() + " no está vencido.");
+            }
+        } else {
+            mostrarAlerta("Error", "Seleccione un alimento para verificar su vencimiento.");
+        }
+    }
+
+    // Método para filtrar productos por categoría
     private void filtrarPorCategoria() {
         Dialog<String> dialog = new Dialog<>(); // Diálogo para seleccionar categoría.
         dialog.setTitle("Filtrar Productos");
@@ -109,6 +140,7 @@ public class GestionDeProductosApp extends Application {
         });
     }
 
+    // Método para configurar la tabla
     private void configurarTabla() {
         tabla = new TableView<>(); // Inicializa la tabla.
 
@@ -131,16 +163,22 @@ public class GestionDeProductosApp extends Application {
         tabla.getColumns().addAll(idCol, nombreCol, precioCol, stockCol, categoriaCol); // Agrega columnas.
     }
 
+    // Método para crear un botón
     private Button crearBoton(String texto, Runnable accion) {
         Button boton = new Button(texto); // Crea un botón.
         boton.setOnAction(e -> accion.run()); // Asigna la acción.
         return boton;
     }
 
+    // Método para agregar un producto
     private void agregarProducto() {
         Dialog<Producto> dialog = new Dialog<>(); // Diálogo para agregar producto.
         dialog.setTitle("Agregar Producto");
         dialog.setHeaderText("Ingrese los datos del producto");
+
+        // Ajustar el tamaño del diálogo para que los botones siempre estén visibles
+        dialog.setWidth(400); // Ancho del diálogo
+        dialog.setHeight(450); // Alto del diálogo (más grande para evitar cortes)
 
         // Campos del formulario.
         TextField idField = new TextField();
@@ -148,16 +186,18 @@ public class GestionDeProductosApp extends Application {
         TextField precioField = new TextField();
         TextField stockField = new TextField();
         TextField categoriaField = new TextField();
+        DatePicker fechaVencimientoPicker = new DatePicker(); // DatePicker para la fecha de vencimiento.
+        CheckBox esPerecederoCheckBox = new CheckBox("Es Perecedero"); // Checkbox para perecedero.
 
         ComboBox<String> tipoProductoComboBox = new ComboBox<>(); // ComboBox para tipo de producto.
         tipoProductoComboBox.getItems().addAll("Ropa", "Alimento", "Electronico"); // Opciones.
         tipoProductoComboBox.setValue("Ropa"); // Valor por defecto.
 
         GridPane grid = new GridPane(); // Layout para el diálogo.
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(10));
-        
+        grid.setHgap(10); // Espaciado horizontal entre columnas
+        grid.setVgap(10); // Espaciado vertical entre filas
+        grid.setPadding(new Insets(10)); // Margen interno del layout
+
         // Agrega campos al layout.
         grid.addRow(0, new Label("ID:"), idField);
         grid.addRow(1, new Label("Nombre:"), nombreField);
@@ -165,6 +205,23 @@ public class GestionDeProductosApp extends Application {
         grid.addRow(3, new Label("Stock:"), stockField);
         grid.addRow(4, new Label("Categoría:"), categoriaField);
         grid.addRow(5, new Label("Tipo de producto:"), tipoProductoComboBox);
+
+        // Listener para mostrar/ocultar campos de Alimento
+        tipoProductoComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            // Limpia los campos de Alimento si ya estaban en el layout
+            if (grid.getChildren().contains(fechaVencimientoPicker)) {
+                grid.getChildren().remove(fechaVencimientoPicker);
+                grid.getChildren().remove(esPerecederoCheckBox);
+                grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Fecha de Vencimiento:"));
+                grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Es Perecedero:"));
+            }
+
+            // Si el tipo seleccionado es "Alimento", agrega los campos específicos
+            if ("Alimento".equals(newVal)) {
+                grid.addRow(6, new Label("Fecha de Vencimiento:"), fechaVencimientoPicker);
+                grid.addRow(7, new Label("Es Perecedero:"), esPerecederoCheckBox);
+            }
+        });
 
         dialog.getDialogPane().setContent(grid); // Asigna el layout al diálogo.
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL); // Botones.
@@ -179,7 +236,7 @@ public class GestionDeProductosApp extends Application {
                         mostrarAlerta("Error", "Todos los campos son obligatorios.");
                         return null;
                     }
-                    
+
                     // Obtiene valores del formulario.
                     int id = Integer.parseInt(idField.getText());
                     String nombre = nombreField.getText();
@@ -190,13 +247,21 @@ public class GestionDeProductosApp extends Application {
                     // Crea el producto según el tipo seleccionado.
                     return switch (tipoProductoComboBox.getValue()) {
                         case "Ropa" -> new Ropa(id, nombre, precio, categoria, stock);
-                        case "Alimento" -> new Alimento(id, nombre, precio, categoria, stock);
+                        case "Alimento" -> {
+                            if (fechaVencimientoPicker.getValue() == null) {
+                                mostrarAlerta("Error", "Por favor, seleccione una fecha de vencimiento válida.");
+                                yield null;
+                            }
+                            Date fechaVencimiento = Date.valueOf(fechaVencimientoPicker.getValue()); // Convierte LocalDate a java.sql.Date
+                            yield new Alimento(id, nombre, precio, categoria, stock, fechaVencimiento, esPerecederoCheckBox.isSelected());
+                        }
                         case "Electronico" -> new Electronico(id, nombre, precio, categoria, stock);
                         default -> {
                             mostrarAlerta("Error", "Tipo de producto no válido.");
                             yield null;
                         }
                     };
+
                 } catch (NumberFormatException e) {
                     mostrarAlerta("Error", "Por favor, ingrese valores válidos para ID, Precio y Stock.");
                     return null;
@@ -212,6 +277,7 @@ public class GestionDeProductosApp extends Application {
         });
     }
 
+    // Método para eliminar un producto
     private void eliminarProducto() {
         Producto seleccionado = tabla.getSelectionModel().getSelectedItem(); // Obtiene el producto seleccionado.
         if (seleccionado != null) {
@@ -222,6 +288,7 @@ public class GestionDeProductosApp extends Application {
         }
     }
 
+    // Método para actualizar un producto
     private void actualizarProducto() {
         Producto seleccionado = tabla.getSelectionModel().getSelectedItem(); // Obtiene el producto seleccionado.
         if (seleccionado != null) {
@@ -229,22 +296,43 @@ public class GestionDeProductosApp extends Application {
             dialog.setTitle("Actualizar Producto");
             dialog.setHeaderText("Ingrese los nuevos datos del producto");
 
+            // Ajustar el tamaño del diálogo
+            dialog.setWidth(400); // Ancho del diálogo
+            dialog.setHeight(450); // Alto del diálogo (más grande para evitar cortes)
+
             // Campos del formulario con valores actuales.
             TextField nombreField = new TextField(seleccionado.getNombre());
             TextField precioField = new TextField(String.valueOf(seleccionado.getPrecio()));
             TextField stockField = new TextField(String.valueOf(seleccionado.getStock()));
             TextField categoriaField = new TextField(seleccionado.getCategoria());
+            DatePicker fechaVencimientoPicker = new DatePicker(); // DatePicker para la fecha de vencimiento.
+            CheckBox esPerecederoCheckBox = new CheckBox("Es Perecedero"); // Checkbox para perecedero.
+
+            ComboBox<String> tipoProductoComboBox = new ComboBox<>(); // ComboBox para tipo de producto.
+            tipoProductoComboBox.getItems().addAll("Ropa", "Alimento", "Electronico"); // Opciones.
+            tipoProductoComboBox.setValue(seleccionado instanceof Alimento ? "Alimento" :
+                                        seleccionado instanceof Electronico ? "Electronico" : "Ropa"); // Valor por defecto.
 
             GridPane grid = new GridPane(); // Layout para el diálogo.
-            grid.setHgap(10);
-            grid.setVgap(10);
-            grid.setPadding(new Insets(10));
-            
+            grid.setHgap(10); // Espaciado horizontal entre columnas
+            grid.setVgap(10); // Espaciado vertical entre filas
+            grid.setPadding(new Insets(10)); // Margen interno del layout
+
             // Agrega campos al layout.
             grid.addRow(0, new Label("Nombre:"), nombreField);
             grid.addRow(1, new Label("Precio:"), precioField);
             grid.addRow(2, new Label("Stock:"), stockField);
             grid.addRow(3, new Label("Categoría:"), categoriaField);
+            grid.addRow(4, new Label("Tipo de producto:"), tipoProductoComboBox);
+
+            // Si el producto seleccionado es un Alimento, muestra los campos específicos
+            if (seleccionado instanceof Alimento) {
+                Alimento alimentoSeleccionado = (Alimento) seleccionado;
+                fechaVencimientoPicker.setValue(alimentoSeleccionado.getFechaVencimiento().toLocalDate()); // Convierte java.sql.Date a LocalDate
+                esPerecederoCheckBox.setSelected(alimentoSeleccionado.isEsPerecedero());
+                grid.addRow(5, new Label("Fecha de Vencimiento:"), fechaVencimientoPicker);
+                grid.addRow(6, new Label("Es Perecedero:"), esPerecederoCheckBox);
+            }
 
             dialog.getDialogPane().setContent(grid); // Asigna el layout al diálogo.
             dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL); // Botones.
@@ -255,16 +343,22 @@ public class GestionDeProductosApp extends Application {
                         // Obtiene nuevos valores del formulario.
                         double precio = Double.parseDouble(precioField.getText());
                         int stock = Integer.parseInt(stockField.getText());
-                        
+
                         // Crea el producto actualizado según el tipo.
                         if (seleccionado instanceof Ropa) {
-                            return new Ropa(seleccionado.getId(), nombreField.getText(), 
+                            return new Ropa(seleccionado.getId(), nombreField.getText(),
                                           precio, categoriaField.getText(), stock);
                         } else if (seleccionado instanceof Alimento) {
-                            return new Alimento(seleccionado.getId(), nombreField.getText(), 
-                                             precio, categoriaField.getText(), stock);
+                            if (fechaVencimientoPicker.getValue() == null) {
+                                mostrarAlerta("Error", "Por favor, seleccione una fecha de vencimiento válida.");
+                                return null;
+                            }
+                            Date fechaVencimiento = Date.valueOf(fechaVencimientoPicker.getValue()); // Convierte LocalDate a java.sql.Date
+                            return new Alimento(seleccionado.getId(), nombreField.getText(),
+                                             precio, categoriaField.getText(), stock,
+                                             fechaVencimiento, esPerecederoCheckBox.isSelected());
                         } else if (seleccionado instanceof Electronico) {
-                            return new Electronico(seleccionado.getId(), nombreField.getText(), 
+                            return new Electronico(seleccionado.getId(), nombreField.getText(),
                                                 precio, categoriaField.getText(), stock);
                         }
                         return null;
@@ -288,21 +382,25 @@ public class GestionDeProductosApp extends Application {
         }
     }
 
+    // Método para exportar a JSON
     private void exportarJSON() {
         gestor.exportarJSON(tabla.getItems(), "productos.json"); // Exporta a JSON.
         mostrarAlerta("Éxito", "Productos exportados a JSON correctamente.");
     }
 
+    // Método para exportar a CSV
     private void exportarCSV() {
         gestor.exportarCSV(tabla.getItems(), "productos.csv"); // Exporta a CSV.
         mostrarAlerta("Éxito", "Productos exportados a CSV correctamente.");
     }
 
+    // Método para exportar a TXT
     private void exportarTXT() {
         gestor.exportarTXT(tabla.getItems(), "productos.txt"); // Exporta a TXT.
         mostrarAlerta("Éxito", "Productos exportados a TXT correctamente.");
     }
 
+    // Método para mostrar una alerta
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION); // Crea una alerta.
         alert.setTitle(titulo);
