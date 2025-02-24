@@ -3,6 +3,7 @@ package gestiondeproductos.logica;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import static gestiondeproductos.logica.ProductoComparators.COMPARAR_POR_STOCK;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -30,8 +31,9 @@ public class GestorDeProductos implements Crud<Producto> {
         if (existeProducto(producto.getId())) {
             throw new RuntimeException("Producto duplicado"); // Evita productos duplicados.
         }
-        productos.add(producto); // Agrega el producto a la lista.
-    }
+        productos.add(producto); // Agrega el producto a la lista "productos" 
+        
+    } //puede recibir objetos de tipo alimento,ropa y electronico por polimorfismo
 
     @Override
     public List<Producto> leer() { // (read)
@@ -65,61 +67,17 @@ public class GestorDeProductos implements Crud<Producto> {
         return productos.stream().anyMatch(p -> p.getId() == id); // Verifica si el producto existe.
     }
 
-    public void ordenarPorPrecio() {
-        Collections.sort(productos); // Ordena por precio (usa Comparable en Producto).
-    }
-
-    public void ordenarPor(Comparator<Producto> comparator) {
-        Collections.sort(productos, comparator); // Ordena usando un comparador personalizado.
-    }
-
-    public List<Producto> filtrarPorPrecioMayorA(double precioMinimo) {
-        return productos.stream()
-                       .filter(p -> p.getPrecio() > precioMinimo) // Filtra por precio mínimo.
-                       .collect(Collectors.toList());
-    }
-
-    public void procesarProductos(List<? super Producto> destino, Predicate<Producto> filtro) {
-        productos.stream()
-                .filter(filtro) // Aplica el filtro.
-                .forEach(destino::add); // Agrega los productos filtrados al destino.
-    }
-
-    public List<Producto> filtrarPorNombre(String texto) {
-        return productos.stream()
-                       .filter(p -> p.getNombre().toLowerCase().contains(texto.toLowerCase())) // Filtra por nombre.
-                       .collect(Collectors.toList());
-    }
-
-    public List<Producto> filtrarPorRangoPrecio(double min, double max) {
-        return productos.stream()
-                       .filter(p -> p.getPrecio() >= min && p.getPrecio() <= max) // Filtra por rango de precio.
-                       .collect(Collectors.toList());
-    }
-
     public List<Producto> filtrarPorCategoria(String categoria) {
         return productos.stream()
                        .filter(p -> p.getCategoria().equalsIgnoreCase(categoria)) // Filtra por categoría.
                        .collect(Collectors.toList());
     }
-
-    public List<Alimento> filtrarPorFechaVencimiento(Date fechaLimite) {
-        return productos.stream()
-                       .filter(p -> p instanceof Alimento) // Solo filtra Alimentos.
-                       .map(p -> (Alimento) p) // Convierte a Alimento.
-                       .filter(a -> a.getFechaVencimiento().before(fechaLimite)) // Filtra por fecha de vencimiento.
-                       .collect(Collectors.toList());
+    
+    public void ordenarPorStock() {
+        productos.sort(COMPARAR_POR_STOCK); // Ordena la lista por stock.
     }
-
-    // Filtro adicional para electrónicos basado en tipo.
-    public List<Electronico> filtrarPorTipoElectronico(TipoElectronico tipo) {
-        return productos.stream()
-                       .filter(p -> p instanceof Electronico) // Solo filtra Electrónicos.
-                       .map(p -> (Electronico) p) // Convierte a Electronico.
-                       .filter(e -> e.getTipo() == tipo)
-                       .collect(Collectors.toList());
-    }
-
+    
+    
     // Método para exportar a JSON (acepta una lista de productos).
     public void exportarJSON(List<Producto> productos, String archivo) {
         if (productos.isEmpty()) {

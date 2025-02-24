@@ -44,7 +44,8 @@ public class GestionDeProductosApp extends Application {
             crearBoton("Exportar a CSV", this::exportarCSV), // Botón para exportar a CSV.
             crearBoton("Exportar a TXT", this::exportarTXT), // Botón para exportar a TXT.
             crearBoton("Incrementar Precio 10%", this::incrementarPrecio10PorCiento), // Botón para incrementar precio.
-            crearBoton("Verificar Vencimiento", this::verificarVencimiento) // Botón para verificar vencimiento.
+            crearBoton("Verificar Vencimiento", this::verificarVencimiento), // Botón para verificar vencimiento.
+            crearBoton("Ordenar por Stock", this::ordenarPorStock) // Nuevo botón para ordenar por stock.
         );
 
         HBox root = new HBox(10); // Contenedor principal.
@@ -138,6 +139,14 @@ public class GestionDeProductosApp extends Application {
                 }
             }
         });
+    }
+
+    // Método para ordenar por stock
+    private void ordenarPorStock() {
+        gestor.leer().sort((p1, p2) -> Integer.compare(p1.getStock(), p2.getStock())); // Ordena por stock.
+        tabla.getItems().clear(); // Limpia la tabla.
+        tabla.getItems().addAll(gestor.leer()); // Vuelve a cargar los productos ordenados.
+        mostrarAlerta("Éxito", "Productos ordenados por stock.");
     }
 
     // Método para configurar la tabla

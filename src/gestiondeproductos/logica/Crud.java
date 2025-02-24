@@ -6,7 +6,7 @@ package gestiondeproductos.logica;
 
 import java.util.List;
 
-public interface Crud<T> {  //T es un tipo generico de objeto
+public interface Crud<T> {  //T es un tipo generico de objeto  
     void crear(T t);
     void actualizar(T t);
     void eliminar(int id);

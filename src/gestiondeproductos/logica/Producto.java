@@ -1,27 +1,27 @@
 package gestiondeproductos.logica;
 
 public abstract class Producto implements Comparable<Producto> {
-    private int id;
+    private int id;  //parte de this.
     private String nombre;
-    private double precio;
+    private double precio;        //variables globales
     private String categoria;
     private int stock;
 
-    // Constructor de Producto
+    // Constructor de Producto  //variables locales  //los parametros son de la derecha
     public Producto(int id, String nombre, double precio, String categoria, int stock) {
-        this.id = id;
+        this.id = id;  
         this.nombre = nombre;
         this.precio = precio;
         this.categoria = categoria;
         this.stock = stock;
     }
 
-    // Getters y setters
-    public int getId() {
+    // Getters y setters  
+    public int getId() {  // con el get veo/atraigo datos 
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id) {  ////set sirve para modificar valores tambien
         this.id = id;
     }
 

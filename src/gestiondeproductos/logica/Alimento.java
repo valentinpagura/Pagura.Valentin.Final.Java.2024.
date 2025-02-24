@@ -8,7 +8,7 @@ public class Alimento extends Producto {
 
     // Constructor de Alimento
     public Alimento(int id, String nombre, double precio, String categoria, int stock, Date fechaVencimiento, boolean esPerecedero) {
-        super(id, nombre, precio, categoria, stock); // Llama al constructor de la clase padre (Producto)
+        super(id, nombre, precio, categoria, stock); // Llama al constructor de la clase madre (Producto)
         this.fechaVencimiento = fechaVencimiento;
         this.esPerecedero = esPerecedero;
     }
