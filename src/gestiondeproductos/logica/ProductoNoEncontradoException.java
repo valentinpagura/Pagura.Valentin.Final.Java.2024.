@@ -6,6 +6,6 @@ package gestiondeproductos.logica;
 
 public class ProductoNoEncontradoException extends Exception {
     public ProductoNoEncontradoException(String mensaje) {
-        super(mensaje);
+        super("No se encontro un producto");
     }
 }

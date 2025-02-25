@@ -33,7 +33,7 @@ public class GestorDeProductos implements Crud<Producto> {
         }
         productos.add(producto); // Agrega el producto a la lista "productos" 
         
-    } //puede recibir objetos de tipo alimento,ropa y electronico por polimorfismo
+    } //puede recibir objetos de tipo alimento,ropa y electronico por polimorfismo.
 
     @Override
     public List<Producto> leer() { // (read)

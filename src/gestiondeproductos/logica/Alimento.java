@@ -36,7 +36,7 @@ public class Alimento extends Producto {
         return fechaVencimiento.before(fechaActual); // Verifica si la fecha de vencimiento es anterior a la actual
     }
 
-    // Sobrescribir el método abstracto mostrarDetalles
+    // Sobrescribir el método abstracto mostrarDetalles de producto
     @Override
     public void mostrarDetalles() {
         System.out.println("Detalles del Alimento:");

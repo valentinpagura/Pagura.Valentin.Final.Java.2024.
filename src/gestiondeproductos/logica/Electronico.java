@@ -4,12 +4,12 @@ public class Electronico extends Producto {
     private int garantia; // en meses
     private TipoElectronico tipo; // Tipo del producto electrónico
 
-    // Constructor
+    
     public Electronico(int id, String nombre, double precio, String categoria, int stock) {
-        super(id, nombre, precio, categoria, stock);
-        this.garantia = garantia;
-        this.tipo = tipo;
-    }
+    super(id, nombre, precio, categoria, stock);
+    this.garantia = garantia; // Inicializa garantia.
+    this.tipo = tipo; // Inicializa tipo.
+}
 
     // Getter y Setter
     public int getGarantia() {
