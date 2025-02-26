@@ -31,9 +31,8 @@ public class GestorDeProductos implements Crud<Producto> {
         if (existeProducto(producto.getId())) {
             throw new RuntimeException("Producto duplicado"); // Evita productos duplicados.
         }
-        productos.add(producto); // Agrega el producto a la lista "productos" 
-        
-    } //puede recibir objetos de tipo alimento,ropa y electronico por polimorfismo.
+        productos.add(producto); // Agrega el producto a la lista "productos".
+    }
 
     @Override
     public List<Producto> leer() { // (read)
@@ -67,17 +66,17 @@ public class GestorDeProductos implements Crud<Producto> {
         return productos.stream().anyMatch(p -> p.getId() == id); // Verifica si el producto existe.
     }
 
-    public List<Producto> filtrarPorCategoria(String categoria) {
+    // Método modificado con wildcard de límite superior
+    public List<Producto> filtrarPorCategoria(List<? extends Producto> productos, String categoria) {
         return productos.stream()
                        .filter(p -> p.getCategoria().equalsIgnoreCase(categoria)) // Filtra por categoría.
                        .collect(Collectors.toList());
     }
-    
+
     public void ordenarPorStock() {
         productos.sort(COMPARAR_POR_STOCK); // Ordena la lista por stock.
     }
-    
-    
+
     // Método para exportar a JSON (acepta una lista de productos).
     public void exportarJSON(List<Producto> productos, String archivo) {
         if (productos.isEmpty()) {
