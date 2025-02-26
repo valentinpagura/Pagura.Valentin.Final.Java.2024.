@@ -49,7 +49,7 @@ public class GestorDeProductos implements Crud<Producto> {
 
     @Override
     public void actualizar(Producto producto) {
-        for (int i = 0; i < productos.size(); i++) {
+        for (int i = 0; i < productos.size(); i++) { //Compara el ID del producto en la posición actual con el ID del producto pasado como parámetro:
             if (productos.get(i).getId() == producto.getId()) {
                 productos.set(i, producto); // Actualiza el producto.
                 return;
@@ -85,7 +85,7 @@ public class GestorDeProductos implements Crud<Producto> {
         }
 
         Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
+            .setPrettyPrinting() //.setPrettyPrinting()
             .registerTypeAdapter(Date.class, new DateSerializer()) // Serializador personalizado para java.sql.Date
             .create();
 
@@ -199,4 +199,4 @@ public class GestorDeProductos implements Crud<Producto> {
         producto.setPrecio(nuevoPrecio);
         System.out.println("Precio actualizado: " + producto.getNombre() + " - Nuevo precio: " + nuevoPrecio);
     };
-}
+} 
