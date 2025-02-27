@@ -99,118 +99,121 @@ public class GestionDeProductosApp extends Application {
 
     // Método para agregar un nuevo producto.
     private void agregarProducto() {
-        Dialog<Producto> dialog = new Dialog<>(); // Diálogo para ingresar los datos del nuevo producto.
-        dialog.setTitle("Agregar Producto");
-        dialog.setHeaderText("Ingrese los datos del producto");
+    Dialog<Producto> dialog = new Dialog<>(); // Diálogo para ingresar los datos del nuevo producto.
+    dialog.setTitle("Agregar Producto");
+    dialog.setHeaderText("Ingrese los datos del producto");
 
-        // Campos del formulario.
-        TextField idField = new TextField();
-        TextField nombreField = new TextField();
-        TextField precioField = new TextField();
-        TextField stockField = new TextField();
-        TextField categoriaField = new TextField();
-        DatePicker fechaVencimientoPicker = new DatePicker(); // DatePicker para la fecha de vencimiento.
-        CheckBox esPerecederoCheckBox = new CheckBox("Es Perecedero"); // Checkbox para productos perecederos.
+    // Campos del formulario.
+    TextField idField = new TextField();
+    TextField nombreField = new TextField();
+    TextField precioField = new TextField();
+    TextField stockField = new TextField();
+    TextField categoriaField = new TextField();
+    DatePicker fechaVencimientoPicker = new DatePicker(); // DatePicker para la fecha de vencimiento.
+    CheckBox esPerecederoCheckBox = new CheckBox("Es Perecedero"); // Checkbox para productos perecederos.
 
-        ComboBox<String> tipoProductoComboBox = new ComboBox<>(); // ComboBox para seleccionar el tipo de producto.
-        tipoProductoComboBox.getItems().addAll("Ropa", "Alimento", "Electronico"); // Opciones disponibles.
-        tipoProductoComboBox.setValue("Ropa"); // Valor por defecto.
+    ComboBox<String> tipoProductoComboBox = new ComboBox<>(); // ComboBox para seleccionar el tipo de producto.
+    tipoProductoComboBox.getItems().addAll("Ropa", "Alimento", "Electronico"); // Opciones disponibles.
+    tipoProductoComboBox.setValue("Ropa"); // Valor por defecto.
 
-        ComboBox<TipoElectronico> tipoElectronicoComboBox = new ComboBox<>(); // ComboBox para seleccionar el tipo de electrónico.
-        tipoElectronicoComboBox.getItems().addAll(TipoElectronico.values()); // Opciones disponibles.
-        tipoElectronicoComboBox.setValue(TipoElectronico.COMPUTADORA); // Valor por defecto.
+    ComboBox<TipoElectronico> tipoElectronicoComboBox = new ComboBox<>(); // ComboBox para seleccionar el tipo de electrónico.
+    tipoElectronicoComboBox.getItems().addAll(TipoElectronico.values()); // Opciones disponibles.
+    tipoElectronicoComboBox.setValue(TipoElectronico.COMPUTADORA); // Valor por defecto.
 
-        GridPane grid = new GridPane(); // Layout para organizar los campos del formulario.
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(10));
+    GridPane grid = new GridPane(); // Layout para organizar los campos del formulario.
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(10));
 
-        // Agrega los campos al layout.
-        grid.addRow(0, new Label("ID:"), idField);
-        grid.addRow(1, new Label("Nombre:"), nombreField);
-        grid.addRow(2, new Label("Precio:"), precioField);
-        grid.addRow(3, new Label("Stock:"), stockField);
-        grid.addRow(4, new Label("Categoría:"), categoriaField);
-        grid.addRow(5, new Label("Tipo de producto:"), tipoProductoComboBox);
+    // Agrega los campos al layout.
+    grid.addRow(0, new Label("ID:"), idField);
+    grid.addRow(1, new Label("Nombre:"), nombreField);
+    grid.addRow(2, new Label("Precio:"), precioField);
+    grid.addRow(3, new Label("Stock:"), stockField);
+    grid.addRow(4, new Label("Categoría:"), categoriaField);
+    grid.addRow(5, new Label("Tipo de producto:"), tipoProductoComboBox);
 
-        // Listener para mostrar/ocultar campos según el tipo de producto seleccionado.
-        tipoProductoComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (grid.getChildren().contains(fechaVencimientoPicker)) {
-                grid.getChildren().remove(fechaVencimientoPicker);
-                grid.getChildren().remove(esPerecederoCheckBox);
-                grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Fecha de Vencimiento:"));
-                grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Es Perecedero:"));
-            }
-            if (grid.getChildren().contains(tipoElectronicoComboBox)) {
-                grid.getChildren().remove(tipoElectronicoComboBox);
-                grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Tipo Electrónico:"));
-            }
+    // Listener para mostrar/ocultar campos según el tipo de producto seleccionado.
+    tipoProductoComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        if (grid.getChildren().contains(fechaVencimientoPicker)) {
+            grid.getChildren().remove(fechaVencimientoPicker);
+            grid.getChildren().remove(esPerecederoCheckBox);
+            grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Fecha de Vencimiento:"));
+            grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Es Perecedero:"));
+        }
+        if (grid.getChildren().contains(tipoElectronicoComboBox)) {
+            grid.getChildren().remove(tipoElectronicoComboBox);
+            grid.getChildren().removeIf(node -> node instanceof Label && ((Label) node).getText().equals("Tipo Electrónico:"));
+        }
 
-            if ("Alimento".equals(newVal)) {
-                grid.addRow(6, new Label("Fecha de Vencimiento:"), fechaVencimientoPicker);
-                grid.addRow(7, new Label("Es Perecedero:"), esPerecederoCheckBox);
-            } else if ("Electronico".equals(newVal)) {
-                grid.addRow(6, new Label("Tipo Electrónico:"), tipoElectronicoComboBox);
-            }
-        });
+        if ("Alimento".equals(newVal)) {
+            grid.addRow(6, new Label("Fecha de Vencimiento:"), fechaVencimientoPicker);
+            grid.addRow(7, new Label("Es Perecedero:"), esPerecederoCheckBox);
+        } else if ("Electronico".equals(newVal)) {
+            grid.addRow(6, new Label("Tipo Electrónico:"), tipoElectronicoComboBox);
+        }
+    });
 
-        dialog.getDialogPane().setContent(grid); // Asigna el layout al diálogo.
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL); // Botones de OK y Cancelar.
+    dialog.getDialogPane().setContent(grid); // Asigna el layout al diálogo.
+    dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL); // Botones de OK y Cancelar.
 
-        dialog.setResultConverter(buttonType -> {
-            if (buttonType == ButtonType.OK) {
-                try {
-                    // Valida que todos los campos obligatorios estén completos.
-                    if (idField.getText().isEmpty() || nombreField.getText().isEmpty() ||
-                        precioField.getText().isEmpty() || stockField.getText().isEmpty() ||
-                        categoriaField.getText().isEmpty()) {
-                        mostrarAlerta("Error", "Todos los campos son obligatorios.");
-                        return null;
-                    }
+    // Ajustar el tamaño del diálogo para que sea más largo (alto).
+    dialog.getDialogPane().setMinHeight(400); // Aumenta la altura del diálogo.
 
-                    // Obtiene los valores del formulario.
-                    int id = Integer.parseInt(idField.getText());
-                    String nombre = nombreField.getText();
-                    double precio = Double.parseDouble(precioField.getText());
-                    int stock = Integer.parseInt(stockField.getText());
-                    String categoria = categoriaField.getText();
-
-                    // Crea el producto según el tipo seleccionado.
-                    return switch (tipoProductoComboBox.getValue()) {
-                        case "Ropa" -> new Ropa(id, nombre, precio, categoria, stock);
-                        case "Alimento" -> {
-                            if (fechaVencimientoPicker.getValue() == null) {
-                                mostrarAlerta("Error", "Por favor, seleccione una fecha de vencimiento válida.");
-                                yield null;
-                            }
-                            Date fechaVencimiento = Date.valueOf(fechaVencimientoPicker.getValue());
-                            yield new Alimento(id, nombre, precio, categoria, stock, fechaVencimiento, esPerecederoCheckBox.isSelected());
-                        }
-                        case "Electronico" -> {
-                            Electronico electronico = new Electronico(id, nombre, precio, categoria, stock);
-                            electronico.setTipo(tipoElectronicoComboBox.getValue());
-                            yield electronico;
-                        }
-                        default -> {
-                            mostrarAlerta("Error", "Tipo de producto no válido.");
-                            yield null;
-                        }
-                    };
-
-                } catch (NumberFormatException e) {
-                    mostrarAlerta("Error", "Por favor, ingrese valores válidos para ID, Precio y Stock.");
+    dialog.setResultConverter(buttonType -> {
+        if (buttonType == ButtonType.OK) {
+            try {
+                // Valida que todos los campos obligatorios estén completos.
+                if (idField.getText().isEmpty() || nombreField.getText().isEmpty() ||
+                    precioField.getText().isEmpty() || stockField.getText().isEmpty() ||
+                    categoriaField.getText().isEmpty()) {
+                    mostrarAlerta("Error", "Todos los campos son obligatorios.");
                     return null;
                 }
-            }
-            return null;
-        });
 
-        Optional<Producto> result = dialog.showAndWait(); // Muestra el diálogo y espera la respuesta.
-        result.ifPresent(producto -> { //Optional es una clase de Java que se utiliza para manejar valores que pueden ser null de manera más segura y expresiva.
-            gestor.crear(producto); // Agrega el producto al gestor.
-            tabla.getItems().add(producto); // Agrega el producto a la tabla.
-        });
-    }
+                // Obtiene los valores del formulario.
+                int id = Integer.parseInt(idField.getText());
+                String nombre = nombreField.getText();
+                double precio = Double.parseDouble(precioField.getText());
+                int stock = Integer.parseInt(stockField.getText());
+                String categoria = categoriaField.getText();
+
+                // Crea el producto según el tipo seleccionado.
+                return switch (tipoProductoComboBox.getValue()) {
+                    case "Ropa" -> new Ropa(id, nombre, precio, categoria, stock);
+                    case "Alimento" -> {
+                        if (fechaVencimientoPicker.getValue() == null) {
+                            mostrarAlerta("Error", "Por favor, seleccione una fecha de vencimiento válida.");
+                            yield null;
+                        }
+                        Date fechaVencimiento = Date.valueOf(fechaVencimientoPicker.getValue());
+                        yield new Alimento(id, nombre, precio, categoria, stock, fechaVencimiento, esPerecederoCheckBox.isSelected());
+                    }
+                    case "Electronico" -> {
+                        Electronico electronico = new Electronico(id, nombre, precio, categoria, stock);
+                        electronico.setTipo(tipoElectronicoComboBox.getValue());
+                        yield electronico;
+                    }
+                    default -> {
+                        mostrarAlerta("Error", "Tipo de producto no válido.");
+                        yield null;
+                    }
+                };
+
+            } catch (NumberFormatException e) {
+                mostrarAlerta("Error", "Por favor, ingrese valores válidos para ID, Precio y Stock.");
+                return null;
+            }
+        }
+        return null;
+    });
+
+    Optional<Producto> result = dialog.showAndWait(); // Muestra el diálogo y espera la respuesta.
+    result.ifPresent(producto -> { // Optional es una clase de Java que se utiliza para manejar valores que pueden ser null de manera más segura y expresiva.
+        gestor.crear(producto); // Agrega el producto al gestor.
+        tabla.getItems().add(producto); // Agrega el producto a la tabla.
+    });
+}
 
     // Método para eliminar un producto seleccionado.
     private void eliminarProducto() {
